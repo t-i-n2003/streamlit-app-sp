@@ -1,5 +1,3 @@
-Tuyệt vời! Đây là nội dung của file requirements.txt sau khi đã loại bỏ dòng python==3.10:
-
 absl-py==2.2.2
 altair==4.2.2
 annotated-types==0.7.0
