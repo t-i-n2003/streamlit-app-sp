@@ -61,9 +61,8 @@ with tabs[1]:
         end_Date1 = st.date_input("Ngày kết thúc dự đoán kiểm tra: ", value= pd.to_datetime('2025-01-02'), max_value= dt.date.today())
         min1 = pd.to_datetime(start_date).strftime('%Y-%m-%d')
     with tab12:
-        profit = st.number_input("Hiệu suất sinh lời: ", step = 0.001)
-        cut_loss = st.number_input("Giá trị cắt lỗ: ", step = 0.001)
-
+        profit = st.number_input("Hiệu suất sinh lời: ", step=0.001, format="%.3f")
+        cut_loss = st.number_input("Giá trị cắt lỗ: ", step=0.001, format="%.3f")
         if st.button("Dự đoán", key=2):
             model_path = f'Models/best_{symbol1}_rdsearch_model.h5'
             
@@ -75,7 +74,7 @@ with tabs[1]:
             current_date = pd.to_datetime(start_date1)
             end_Date = pd.to_datetime(end_Date1)
             total_value = 0
-            cash = 0        
+            cash = 50000        
             holding_volume = 0
             real_value = 0
             while current_date <= end_Date:
@@ -121,7 +120,7 @@ with tabs[1]:
 
                 # Điều kiện mua
                 if predicted_price >= past_price * (1 + profit):
-                    if cash < volume * past_price:
+                    if cash < 50 * past_price:
                         current_date += pd.DateOffset(days=1)
                         continue
                     volume = 50
