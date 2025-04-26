@@ -64,7 +64,7 @@ with tabs[1]:
         cut_loss = st.number_input("Giá trị cắt lỗ: ", step = 0.01)
 
         if st.button("Dự đoán"):
-            model_path = f'Models/best_{symbol}_rdsearch_model.h5'
+            model_path = f'Models/best_{symbol1}_rdsearch_model.h5'
             
             real_df = pd.DataFrame(columns=[
                 "date", "symbol", "price", "volume", "sell", "buy", "total_value"
@@ -85,7 +85,7 @@ with tabs[1]:
                 current_date_str = current_date.strftime('%Y-%m-%d')
 
                 # Dữ liệu đầu vào
-                price_df = gd.get_data(symbol, from_date_str, current_date_str)
+                price_df = gd.get_data(symbol1, from_date_str, current_date_str)
                 price_df.drop_duplicates(subset=['time'], inplace=True)
 
                 if price_df.empty:
@@ -93,7 +93,7 @@ with tabs[1]:
                     continue
 
                 past_price = price_df['price'].iloc[-1]
-                df_pred = predict_data.predict(price_df, symbol, model_path, mode=1)
+                df_pred = predict_data.predict(price_df, symbol1, model_path, mode=1)
 
                 if df_pred is None or df_pred.empty:
                     current_date += pd.DateOffset(days=1)
@@ -103,7 +103,7 @@ with tabs[1]:
                 predict_date = pd.to_datetime(df_pred['time'].iloc[-1])
 
                 # Giá thực tế hôm nay
-                actual_df = gd.get_data(symbol, current_date_str, current_date_str)
+                actual_df = gd.get_data(symbol1, current_date_str, current_date_str)
                 actual_df.drop_duplicates(subset=['time'], inplace=True)
 
                 if actual_df.empty:
