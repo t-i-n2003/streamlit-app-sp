@@ -61,8 +61,8 @@ with tabs[1]:
         end_Date1 = st.date_input("Ngày kết thúc dự đoán kiểm tra: ", value= pd.to_datetime('2025-01-02'), max_value= dt.date.today())
         min1 = pd.to_datetime(start_date).strftime('%Y-%m-%d')
     with tab12:
-        profit = st.number_input("Hiệu suất sinh lời: ", step = 0.01)
-        cut_loss = st.number_input("Giá trị cắt lỗ: ", step = 0.01)
+        profit = st.number_input("Hiệu suất sinh lời: ", step = 0.001)
+        cut_loss = st.number_input("Giá trị cắt lỗ: ", step = 0.001)
 
         if st.button("Dự đoán", key=2):
             model_path = f'Models/best_{symbol1}_rdsearch_model.h5'
