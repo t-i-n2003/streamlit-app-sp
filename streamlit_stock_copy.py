@@ -151,7 +151,7 @@ with tabs[1]:
 
                 current_date += pd.DateOffset(days=1)
 
-        st.dataframe(real_df)
+            st.dataframe(real_df)
 
             
     
