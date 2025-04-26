@@ -117,7 +117,7 @@ with tabs[1]:
             trade = None
 
             # Điều kiện mua
-            if predicted_price >= past_price * (1 + profit):
+            if predicted_price > past_price:
                 if cash < 50 * past_price:
                     current_date += pd.DateOffset(days=1)
                     continue
@@ -133,12 +133,12 @@ with tabs[1]:
                     "volume": volume,
                     "sell": 0,
                     "buy": 1,
-                    "total_value": cash + holding_volume * past_price,
+                    "total_value": cash,
                     'holding_volume': holding_volume
                 }
 
             # Điều kiện bán
-            elif predicted_price <= past_price * (1 - cut_loss):
+            elif predicted_price < past_price:
                 if holding_volume < 0:
                     current_date += pd.DateOffset(days=1)
                     continue
@@ -154,7 +154,7 @@ with tabs[1]:
                     "volume": -volume,
                     "sell": 1,
                     "buy": 0,
-                    "total_value": cash + holding_volume * past_price,
+                    "total_value": cash,
                     'holding_volume': holding_volume
                 }
             if trade:
