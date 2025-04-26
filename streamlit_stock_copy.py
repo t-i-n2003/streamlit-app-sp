@@ -8,6 +8,7 @@ import pandas as pd
 import predict_data
 import get_data as gd
 import datetime as dt
+from tenacity import RetryError
 
 st.set_page_config(page_title="Stock Prediction", layout="wide")
 
@@ -33,7 +34,7 @@ with tabs[0]:
     with col1:
         symbol = st.selectbox("Chọn mã cổ phiếu:", VN30, index=0)
         st.write("### Thời gian dự đoán")
-        start_date = st.date_input("Ngày bắt đầu dự đoán:", value= pd.to_datetime('2024-06-02'), max_value= dt.date.today())
+        start_date = st.date_input("Ngày bắt đầu dự đoán:", value= pd.to_datetime('2025-01-01'), max_value= dt.date.today())
         min = pd.to_datetime(start_date).strftime('%Y-%m-%d')
     with col2:
         numbers_date = st.number_input("Nhập số ngày cần dự đoán: ", step = 1)
@@ -56,8 +57,8 @@ with tabs[1]:
     with tab11:
         symbol1 = st.selectbox("Chọn mã cổ phiếu: ", VN30, index=0, key=1)
         st.write("### Thời gian kiểm tra hiệu suất sinh lời")
-        start_date1 = st.date_input("Ngày bắt đầu dự đoán kiểm tra: ", value= pd.to_datetime('2024-06-02'), max_value= dt.date.today() - pd.DateOffset(days=15))
-        end_Date1 = st.date_input("Ngày kết thúc dự đoán kiểm tra: ", value= pd.to_datetime('2024-06-02'), max_value= dt.date.today())
+        start_date1 = st.date_input("Ngày bắt đầu dự đoán kiểm tra: ", value= pd.to_datetime('2025-01-01'), max_value= dt.date.today() - pd.DateOffset(days=15))
+        end_Date1 = st.date_input("Ngày kết thúc dự đoán kiểm tra: ", value= pd.to_datetime('2025-01-02'), max_value= dt.date.today())
         min1 = pd.to_datetime(start_date).strftime('%Y-%m-%d')
     with tab12:
         profit = st.number_input("Hiệu suất sinh lời: ", step = 0.01)
@@ -103,16 +104,15 @@ with tabs[1]:
                 predict_date = pd.to_datetime(df_pred['time'].iloc[-1])
 
                 # Giá thực tế hôm nay
-                actual_df = gd.get_data(symbol1, current_date_str, current_date_str)
-                actual_df.drop_duplicates(subset=['time'], inplace=True)
-
+                try:
+                    actual_df = gd.get_data(symbol1, current_date_str, current_date_str)
+                    actual_price = actual_df['price'].iloc[0]
+                    actual_df.drop_duplicates(subset=['time'], inplace=True)
+                except (ValueError, RetryError) as e:
+                    continue
                 if actual_df.empty:
                     current_date += pd.DateOffset(days=1)
                     continue
-
-                actual_price = actual_df['price'].iloc[0]
-
-                # Khởi tạo biến giao dịch
                 trade = None
 
                 # Điều kiện mua
