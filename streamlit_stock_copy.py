@@ -63,7 +63,7 @@ with tabs[1]:
         profit = st.number_input("Hiệu suất sinh lời: ", step = 0.01)
         cut_loss = st.number_input("Giá trị cắt lỗ: ", step = 0.01)
 
-        if st.button("Dự đoán"):
+        if st.button("Dự đoán", key=2):
             model_path = f'Models/best_{symbol1}_rdsearch_model.h5'
             
             real_df = pd.DataFrame(columns=[
@@ -93,7 +93,7 @@ with tabs[1]:
                     continue
 
                 past_price = price_df['price'].iloc[-1]
-                df_pred = predict_data.predict(price_df, symbol1, model_path, mode=1)
+                df_pred = predict_data.predict(price_df, symbol1, model_path, num_days=1)
 
                 if df_pred is None or df_pred.empty:
                     current_date += pd.DateOffset(days=1)
