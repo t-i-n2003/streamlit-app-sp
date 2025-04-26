@@ -52,16 +52,16 @@ with tabs[0]:
             
 with tabs[1]:
     st.header("Nhập thông tin dữ liệu chứng khoán")
-    col1, col2 = st.columns(2)
-    with col1:
-        symbol = st.selectbox("Chọn mã cổ phiếu:", VN30, index=0)
+    tab11, tab12 = st.columns(2)
+    with tab11:
+        symbol1 = st.selectbox("Chọn mã cổ phiếu:", VN30, index=0)
         st.write("### Thời gian kiểm tra hiệu suất sinh lời")
-        start_date = st.date_input("Ngày bắt đầu dự đoán kiểm tra: ", value= pd.to_datetime('2024-06-02'), max_value= dt.date.today() - pd.DateOffset(days=15))
-        end_Date = st.date_input("Ngày kết thúc dự đoán kiểm tra: ", value= pd.to_datetime('2024-06-02'), max_value= dt.date.today())
-        min = pd.to_datetime(start_date).strftime('%Y-%m-%d')
-    with col2:
-        profit = st.number_input("Hiệu suất sinh lời: ", step=0.01)
-        cut_loss = st.number_input("Giá trị cắt lỗ: ", step=0.01)
+        start_date1 = st.date_input("Ngày bắt đầu dự đoán kiểm tra: ", value= pd.to_datetime('2024-06-02'), max_value= dt.date.today() - pd.DateOffset(days=15))
+        end_Date1 = st.date_input("Ngày kết thúc dự đoán kiểm tra: ", value= pd.to_datetime('2024-06-02'), max_value= dt.date.today())
+        min1 = pd.to_datetime(start_date).strftime('%Y-%m-%d')
+    with tab12:
+        profit = st.number_input("Hiệu suất sinh lời: ", step = 0.01)
+        cut_loss = st.number_input("Giá trị cắt lỗ: ", step = 0.01)
 
         if st.button("Dự đoán"):
             model_path = f'Models/best_{symbol}_rdsearch_model.h5'
@@ -71,8 +71,8 @@ with tabs[1]:
             ])
             total_value = 0  # tổng giá trị lời/lỗ
 
-            current_date = pd.to_datetime(start_date)
-            end_Date = pd.to_datetime(end_Date)
+            current_date = pd.to_datetime(start_date1)
+            end_Date = pd.to_datetime(end_Date1)
             total_value = 0
             cash = 0        
             holding_volume = 0
@@ -123,7 +123,7 @@ with tabs[1]:
 
                     trade = {
                         "date": predict_date,
-                        "symbol": symbol,
+                        "symbol": symbol1,
                         "price": past_price,
                         "volume": volume,
                         "sell": 0,
@@ -139,7 +139,7 @@ with tabs[1]:
 
                     trade = {
                         "date": predict_date,
-                        "symbol": symbol,
+                        "symbol": symbol1,
                         "price": past_price,
                         "volume": -volume,
                         "sell": 1,
