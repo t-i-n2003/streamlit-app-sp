@@ -27,7 +27,7 @@ def predict(df, symbol, model_path, num_days):
 
     df_predictions = pd.DataFrame({
         'time': future_dates,
-        'Predicted Price': predictions['predictions']
+        'predicted_price': predictions['predictions']
     })
     
     return df_predictions
