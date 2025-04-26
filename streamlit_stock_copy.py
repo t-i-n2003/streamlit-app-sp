@@ -64,7 +64,7 @@ with tabs[1]:
         profit = st.number_input("Hiệu suất sinh lời: ", step=0.001, format="%.3f")
         cut_loss = st.number_input("Giá trị cắt lỗ: ", step=0.001, format="%.3f")
         real_df = pd.DataFrame(columns=[
-                "date", "symbol", "price", "volume", "sell", "buy", "total_value", "holding_volume"
+                "date", "symbol", "price", "predicted_price", "volume", "sell", "buy", "total_value", "holding_volume", 
             ])
     if st.button("Dự đoán", key=2):
         model_path = f'Models/best_{symbol1}_rdsearch_model.h5'
@@ -129,6 +129,7 @@ with tabs[1]:
                     "date": predict_date,
                     "symbol": symbol1,
                     "price": past_price,
+                    "predicted_price": predicted_price,
                     "volume": volume,
                     "sell": 0,
                     "buy": 1,
@@ -149,6 +150,7 @@ with tabs[1]:
                     "date": predict_date,
                     "symbol": symbol1,
                     "price": past_price,
+                    "predicted_price": predicted_price,
                     "volume": -volume,
                     "sell": 1,
                     "buy": 0,
