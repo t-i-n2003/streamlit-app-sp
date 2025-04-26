@@ -63,102 +63,101 @@ with tabs[1]:
     with tab12:
         profit = st.number_input("Hiệu suất sinh lời: ", step=0.001, format="%.3f")
         cut_loss = st.number_input("Giá trị cắt lỗ: ", step=0.001, format="%.3f")
-        if st.button("Dự đoán", key=2):
-            model_path = f'Models/best_{symbol1}_rdsearch_model.h5'
-            
-            real_df = pd.DataFrame(columns=[
+        real_df = pd.DataFrame(columns=[
                 "date", "symbol", "price", "volume", "sell", "buy", "total_value", "holding_volume"
             ])
-            total_value = 0  # tổng giá trị lời/lỗ
+    if st.button("Dự đoán", key=2):
+        model_path = f'Models/best_{symbol1}_rdsearch_model.h5'
+        total_value = 0  # tổng giá trị lời/lỗ
 
-            current_date = pd.to_datetime(start_date1)
-            end_Date = pd.to_datetime(end_Date1)
-            total_value = 0
-            cash = 50000        
-            holding_volume = 0
-            while current_date <= end_Date:
-                if current_date.weekday() in [4, 5]:
-                    current_date += pd.DateOffset(days=1)
-                    continue
-                from_date = current_date - pd.DateOffset(days=100)
-                from_date_str = from_date.strftime('%Y-%m-%d')
-                current_date_str = current_date.strftime('%Y-%m-%d')
-
-                # Dữ liệu đầu vào
-                price_df = gd.get_data(symbol1, from_date_str, current_date_str)
-                time.sleep(0.5)
-                price_df.drop_duplicates(subset=['time'], inplace=True)
-
-                if price_df.empty:
-                    current_date += pd.DateOffset(days=1)
-                    continue
-
-                past_price = price_df['price'].iloc[-1]
-                df_pred = predict_data.predict(price_df, symbol1, model_path, num_days=1)
-
-                if df_pred is None or df_pred.empty:
-                    current_date += pd.DateOffset(days=1)
-                    continue
-
-                predicted_price = df_pred['predicted_price'].iloc[-1]
-                predict_date = pd.to_datetime(df_pred['time'].iloc[-1])
-
-                # Giá thực tế hôm nay
-                try:
-                    actual_df = gd.get_data(symbol1, current_date_str, current_date_str)
-                    time.sleep(0.5)
-                    actual_price = actual_df['price'].iloc[0]
-                    actual_df.drop_duplicates(subset=['time'], inplace=True)
-                except (ValueError, RetryError) as e:
-                    current_date += pd.DateOffset(days=1)
-                    continue
-                if actual_df.empty:
-                    current_date += pd.DateOffset(days=1)
-                    continue
-                trade = None
-
-                # Điều kiện mua
-                if predicted_price >= past_price * (1 + profit):
-                    if cash < 50 * past_price:
-                        current_date += pd.DateOffset(days=1)
-                        continue
-                    volume = 50
-                    holding_volume += volume
-                    cash -= volume * past_price  # trừ tiền mua
-
-                    trade = {
-                        "date": predict_date,
-                        "symbol": symbol1,
-                        "price": past_price,
-                        "volume": volume,
-                        "sell": 0,
-                        "buy": 1,
-                        "total_value": cash + holding_volume * past_price,
-                        'holding_volume': holding_volume
-                    }
-
-                # Điều kiện bán
-                elif predicted_price <= past_price * (1 - cut_loss):
-                    if holding_volume < 0:
-                        current_date += pd.DateOffset(days=1)
-                        continue
-                    volume = 50
-                    holding_volume -= volume
-                    cash += volume * past_price  # cộng tiền bán
-
-                    trade = {
-                        "date": predict_date,
-                        "symbol": symbol1,
-                        "price": past_price,
-                        "volume": -volume,
-                        "sell": 1,
-                        "buy": 0,
-                        "total_value": cash + holding_volume * past_price,
-                        'holding_volume': holding_volume
-                    }
-                if trade:
-                    real_df = pd.concat([real_df, pd.DataFrame([trade])], ignore_index=True)
-
+        current_date = pd.to_datetime(start_date1)
+        end_Date = pd.to_datetime(end_Date1)
+        total_value = 0
+        cash = 50000        
+        holding_volume = 0
+        while current_date <= end_Date:
+            if current_date.weekday() in [4, 5]:
                 current_date += pd.DateOffset(days=1)
+                continue
+            from_date = current_date - pd.DateOffset(days=100)
+            from_date_str = from_date.strftime('%Y-%m-%d')
+            current_date_str = current_date.strftime('%Y-%m-%d')
 
-            st.dataframe(real_df)
+            # Dữ liệu đầu vào
+            price_df = gd.get_data(symbol1, from_date_str, current_date_str)
+            time.sleep(0.5)
+            price_df.drop_duplicates(subset=['time'], inplace=True)
+
+            if price_df.empty:
+                current_date += pd.DateOffset(days=1)
+                continue
+
+            past_price = price_df['price'].iloc[-1]
+            df_pred = predict_data.predict(price_df, symbol1, model_path, num_days=1)
+
+            if df_pred is None or df_pred.empty:
+                current_date += pd.DateOffset(days=1)
+                continue
+
+            predicted_price = df_pred['predicted_price'].iloc[-1]
+            predict_date = pd.to_datetime(df_pred['time'].iloc[-1])
+
+            # Giá thực tế hôm nay
+            try:
+                actual_df = gd.get_data(symbol1, current_date_str, current_date_str)
+                time.sleep(0.5)
+                actual_price = actual_df['price'].iloc[0]
+                actual_df.drop_duplicates(subset=['time'], inplace=True)
+            except (ValueError, RetryError) as e:
+                current_date += pd.DateOffset(days=1)
+                continue
+            if actual_df.empty:
+                current_date += pd.DateOffset(days=1)
+                continue
+            trade = None
+
+            # Điều kiện mua
+            if predicted_price >= past_price * (1 + profit):
+                if cash < 50 * past_price:
+                    current_date += pd.DateOffset(days=1)
+                    continue
+                volume = 50
+                holding_volume += volume
+                cash -= volume * past_price  # trừ tiền mua
+
+                trade = {
+                    "date": predict_date,
+                    "symbol": symbol1,
+                    "price": past_price,
+                    "volume": volume,
+                    "sell": 0,
+                    "buy": 1,
+                    "total_value": cash + holding_volume * past_price,
+                    'holding_volume': holding_volume
+                }
+
+            # Điều kiện bán
+            elif predicted_price <= past_price * (1 - cut_loss):
+                if holding_volume < 0:
+                    current_date += pd.DateOffset(days=1)
+                    continue
+                volume = 50
+                holding_volume -= volume
+                cash += volume * past_price  # cộng tiền bán
+
+                trade = {
+                    "date": predict_date,
+                    "symbol": symbol1,
+                    "price": past_price,
+                    "volume": -volume,
+                    "sell": 1,
+                    "buy": 0,
+                    "total_value": cash + holding_volume * past_price,
+                    'holding_volume': holding_volume
+                }
+            if trade:
+                real_df = pd.concat([real_df, pd.DataFrame([trade])], ignore_index=True)
+
+            current_date += pd.DateOffset(days=1)
+
+        st.dataframe(real_df)
