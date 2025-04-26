@@ -68,7 +68,7 @@ with tabs[1]:
             model_path = f'Models/best_{symbol1}_rdsearch_model.h5'
             
             real_df = pd.DataFrame(columns=[
-                "date", "symbol", "price", "volume", "sell", "buy", "total_value"
+                "date", "symbol", "price", "volume", "sell", "buy", "total_value", "real_total_value"
             ])
             total_value = 0  # tổng giá trị lời/lỗ
 
@@ -77,6 +77,7 @@ with tabs[1]:
             total_value = 0
             cash = 0        
             holding_volume = 0
+            real_value = 0
             while current_date <= end_Date:
                 if current_date.weekday() in [4, 5]:
                     current_date += pd.DateOffset(days=1)
@@ -111,6 +112,7 @@ with tabs[1]:
                     actual_price = actual_df['price'].iloc[0]
                     actual_df.drop_duplicates(subset=['time'], inplace=True)
                 except (ValueError, RetryError) as e:
+                    current_date += pd.DateOffset(days=1)
                     continue
                 if actual_df.empty:
                     current_date += pd.DateOffset(days=1)
@@ -119,6 +121,9 @@ with tabs[1]:
 
                 # Điều kiện mua
                 if predicted_price >= past_price * (1 + profit):
+                    if cash < volume * past_price:
+                        current_date += pd.DateOffset(days=1)
+                        continue
                     volume = 50
                     holding_volume += volume
                     cash -= volume * past_price  # trừ tiền mua
@@ -135,6 +140,9 @@ with tabs[1]:
 
                 # Điều kiện bán
                 elif predicted_price <= past_price * (1 - cut_loss):
+                    if holding_volume < 0:
+                        current_date += pd.DateOffset(days=1)
+                        continue
                     volume = 50
                     holding_volume -= volume
                     cash += volume * past_price  # cộng tiền bán
@@ -154,6 +162,3 @@ with tabs[1]:
                 current_date += pd.DateOffset(days=1)
 
             st.dataframe(real_df)
-
-            
-    
