@@ -61,8 +61,6 @@ with tabs[1]:
         end_Date1 = st.date_input("Ngày kết thúc dự đoán kiểm tra: ", value= pd.to_datetime('2025-01-02'), max_value= dt.date.today())
         min1 = pd.to_datetime(start_date).strftime('%Y-%m-%d')
     with tab12:
-        profit = st.number_input("Hiệu suất sinh lời: ", step=0.001, format="%.3f")
-        cut_loss = st.number_input("Giá trị cắt lỗ: ", step=0.001, format="%.3f")
         real_df = pd.DataFrame(columns=[
                 "date", "symbol", "price", "predicted_price", "volume", "sell", "buy", "total_value", "holding_volume", 
             ])
