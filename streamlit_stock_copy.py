@@ -67,7 +67,7 @@ with tabs[1]:
             model_path = f'Models/best_{symbol1}_rdsearch_model.h5'
             
             real_df = pd.DataFrame(columns=[
-                "date", "symbol", "price", "volume", "sell", "buy", "total_value", "real_total_value"
+                "date", "symbol", "price", "volume", "sell", "buy", "total_value", "holding_volume"
             ])
             total_value = 0  # tổng giá trị lời/lỗ
 
@@ -76,7 +76,6 @@ with tabs[1]:
             total_value = 0
             cash = 50000        
             holding_volume = 0
-            real_value = 0
             while current_date <= end_Date:
                 if current_date.weekday() in [4, 5]:
                     current_date += pd.DateOffset(days=1)
@@ -134,7 +133,8 @@ with tabs[1]:
                         "volume": volume,
                         "sell": 0,
                         "buy": 1,
-                        "total_value": cash + holding_volume * past_price
+                        "total_value": cash + holding_volume * past_price,
+                        'holding_volume': holding_volume
                     }
 
                 # Điều kiện bán
@@ -153,7 +153,8 @@ with tabs[1]:
                         "volume": -volume,
                         "sell": 1,
                         "buy": 0,
-                        "total_value": cash + holding_volume * past_price
+                        "total_value": cash + holding_volume * past_price,
+                        'holding_volume': holding_volume
                     }
                 if trade:
                     real_df = pd.concat([real_df, pd.DataFrame([trade])], ignore_index=True)
