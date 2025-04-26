@@ -9,7 +9,7 @@ import predict_data
 import get_data as gd
 import datetime as dt
 from tenacity import RetryError
-
+import time
 st.set_page_config(page_title="Stock Prediction", layout="wide")
 
 VN30 = [
@@ -87,6 +87,7 @@ with tabs[1]:
 
                 # Dữ liệu đầu vào
                 price_df = gd.get_data(symbol1, from_date_str, current_date_str)
+                time.sleep(0.5)
                 price_df.drop_duplicates(subset=['time'], inplace=True)
 
                 if price_df.empty:
@@ -106,6 +107,7 @@ with tabs[1]:
                 # Giá thực tế hôm nay
                 try:
                     actual_df = gd.get_data(symbol1, current_date_str, current_date_str)
+                    time.sleep(0.5)
                     actual_price = actual_df['price'].iloc[0]
                     actual_df.drop_duplicates(subset=['time'], inplace=True)
                 except (ValueError, RetryError) as e:
