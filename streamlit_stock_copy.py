@@ -54,7 +54,7 @@ with tabs[1]:
     st.header("Nhập thông tin dữ liệu chứng khoán")
     tab11, tab12 = st.columns(2)
     with tab11:
-        symbol1 = st.selectbox("Chọn mã cổ phiếu:", VN30, index=0)
+        symbol1 = st.selectbox("Chọn mã cổ phiếu: ", VN30, index=0, key=1)
         st.write("### Thời gian kiểm tra hiệu suất sinh lời")
         start_date1 = st.date_input("Ngày bắt đầu dự đoán kiểm tra: ", value= pd.to_datetime('2024-06-02'), max_value= dt.date.today() - pd.DateOffset(days=15))
         end_Date1 = st.date_input("Ngày kết thúc dự đoán kiểm tra: ", value= pd.to_datetime('2024-06-02'), max_value= dt.date.today())
