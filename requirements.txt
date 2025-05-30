@@ -13,3 +13,4 @@ tensorflow==2.11.0
 urllib3==2.4.0
 vnstock==3.2.4
 underthesea
+transformers
