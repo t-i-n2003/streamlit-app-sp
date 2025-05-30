@@ -8,7 +8,7 @@ import pandas as pd
 import predict_data
 import get_data as gd
 import datetime as dt
-
+from NLP import predict_label
 st.set_page_config(page_title="Stock Prediction", layout="wide")
 
 VN30 = [
@@ -25,7 +25,7 @@ def plot(df, symbol):
 
 st.title("Dữ liệu chứng khoán")
 
-tabs = st.tabs(["Dự đoán giá cổ phiếu"])
+tabs = st.tabs(["Dự đoán giá cổ phiếu", "Tác động tin tức tài chính"])
 # ============================ 🟢 TAB 1: Dữ liệu lịch sử giao dịch ============================
 with tabs[0]:
     st.header("Nhập thông tin dữ liệu chứng khoán")
@@ -48,6 +48,16 @@ with tabs[0]:
         df = predict_data.predict(price_df, symbol, model_path, numbers_date)
         st.dataframe(df)
         st.write("### Biểu đồ dự đoán")
-        st.plotly_chart(plot(df, symbol))   
+        st.plotly_chart(plot(df, symbol)) 
+with tabs[1]:
+    text = st.text_input("Nhập tin tức: ", value="", key=2)
+    if st.button("Dự đoán nhãn tin tức", key=3):
+        if text:
+            label = predict_label(text)
+            st.write(f"Nhãn dự đoán: {label}")
+        else:
+            st.warning("Vui lòng nhập tin tức để dự đoán nhãn.")
+
+    
             
     
