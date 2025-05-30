@@ -50,11 +50,20 @@ with tabs[0]:
         st.write("### Biểu đồ dự đoán")
         st.plotly_chart(plot(df, symbol)) 
 with tabs[1]:
+    label_map = {
+        0: "Tiêu cực",
+        1: "Trung tính",
+        2: "Tích cực"
+    }
+
     text = st.text_input("Nhập tin tức: ", value="", key=2)
+
     if st.button("Dự đoán nhãn tin tức", key=3):
         if text:
-            label = predict_label(text)
-            st.write(f"Nhãn dự đoán: {label}")
+            label_index, probs = predict_label(text)
+            label_name = label_map[label_index]
+            st.markdown(f"**Tin tức:** {text}")
+            st.markdown(f"**Nhãn dự đoán:** {label_name}")
         else:
             st.warning("Vui lòng nhập tin tức để dự đoán nhãn.")
 
