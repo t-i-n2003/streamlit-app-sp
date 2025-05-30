@@ -14,3 +14,4 @@ urllib3==2.4.0
 vnstock==3.2.4
 underthesea
 transformers
+torch
