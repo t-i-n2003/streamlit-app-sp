@@ -3,7 +3,7 @@ import torch
 from underthesea import word_tokenize
 
 # Dùng mô hình đã fine-tuned cho sentiment analysis
-model = "justdoit2111/phobert-base-vietnamese-sentiment"
+model = "mr4/phobert-base-vi-sentiment-analysis"
 tokenizer = AutoTokenizer.from_pretrained(model)
 phobert = AutoModelForSequenceClassification.from_pretrained(model)
 phobert.eval()
