@@ -17,6 +17,9 @@ VN30 = [
     "TPB", "VCB", "VHM", "VIC", "VJC", "VNM", "VPB", "VRE", "GAS", "KDH", "PNJ", "REE"
 ]
 def plot(df, symbol):
+    df = df.copy()
+    df = df.sort_values('time')
+
     # convert predicted price
     df['predicted_price'] = (
         df['predicted_price']
@@ -72,6 +75,11 @@ with tabs[0]:
         price_df = gd.get_data(symbol, fromdate, min)   
         price_df.drop_duplicates(subset=['time'], inplace=True)
         df = predict_data.predict(price_df, symbol, model_path, numbers_date)
+        st.write(df.head())
+        st.write(df.dtypes)
+        st.write(df.shape)
+        st.write(df.isna().sum())
+        df['predicted_price'] = df['predicted_price'].astype('float64')
         st.write(df.dtypes)
         st.dataframe(df)   
         st.write("### Biểu đồ dự đoán")
