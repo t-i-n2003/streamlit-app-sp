@@ -16,19 +16,29 @@ VN30 = [
     "MWG", "NVL", "PDR", "PLX", "POW", "SAB", "SSI", "STB", "TCB",
     "TPB", "VCB", "VHM", "VIC", "VJC", "VNM", "VPB", "VRE", "GAS", "KDH", "PNJ", "REE"
 ]
-
 def plot(df, symbol):
-    # Fix predicted_price đang là string
+    # convert predicted price
     df['predicted_price'] = (
-        df['predicted_price'].astype(str).str.replace(',', '').astype(float)
+        df['predicted_price']
+        .astype(str)
+        .str.replace(',', '')
+        .str.replace(' ', '')
+        .astype(float)
     )
+
+    # convert time to datetime
+    df['time'] = pd.to_datetime(df['time'])
 
     fig = make_subplots(rows=1, cols=1, vertical_spacing=0.1,
                         subplot_titles=("Giá cổ phiếu dự đoán",))
 
     fig.add_trace(
-        go.Scatter(x=df['time'], y=df['predicted_price'],
-                   mode='lines', name='Giá dự đoán'),
+        go.Scatter(
+            x=df['time'], 
+            y=df['predicted_price'],
+            mode='lines', 
+            name='Giá dự đoán'
+        ),
         row=1, col=1
     )
 
@@ -36,6 +46,7 @@ def plot(df, symbol):
         title_text=f"Biểu đồ giá dự đoán cổ phiếu {symbol}",
         height=600
     )
+
     return fig
 
 st.title("Dữ liệu chứng khoán")
@@ -61,7 +72,8 @@ with tabs[0]:
         price_df = gd.get_data(symbol, fromdate, min)   
         price_df.drop_duplicates(subset=['time'], inplace=True)
         df = predict_data.predict(price_df, symbol, model_path, numbers_date)
-        st.dataframe(df)
+        st.write(df.dtypes)
+        st.dataframe(df)   
         st.write("### Biểu đồ dự đoán")
         st.plotly_chart(plot(df, symbol)) 
 with tabs[1]:
