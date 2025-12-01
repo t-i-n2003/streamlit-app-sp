@@ -18,9 +18,24 @@ VN30 = [
 ]
 
 def plot(df, symbol):
-    fig = make_subplots(rows=1, cols=1, vertical_spacing=0.1, subplot_titles=("Giá cổ phiếu dư đoán",))
-    fig.add_trace(go.Scatter(x=df['time'], y=df['predicted_price'], mode='lines', name='Giá dự đoán'), row=1, col=1)
-    fig.update_layout(title_text=f"Biểu đồ giá dự đoán cổ phiếu {symbol }", height=600)
+    # Fix predicted_price đang là string
+    df['predicted_price'] = (
+        df['predicted_price'].astype(str).str.replace(',', '').astype(float)
+    )
+
+    fig = make_subplots(rows=1, cols=1, vertical_spacing=0.1,
+                        subplot_titles=("Giá cổ phiếu dự đoán",))
+
+    fig.add_trace(
+        go.Scatter(x=df['time'], y=df['predicted_price'],
+                   mode='lines', name='Giá dự đoán'),
+        row=1, col=1
+    )
+
+    fig.update_layout(
+        title_text=f"Biểu đồ giá dự đoán cổ phiếu {symbol}",
+        height=600
+    )
     return fig
 
 st.title("Dữ liệu chứng khoán")
