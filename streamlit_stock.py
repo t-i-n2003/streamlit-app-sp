@@ -18,37 +18,29 @@ VN30 = [
 ]
 def plot(df, symbol):
     df = df.copy()
-    df = df.sort_values('time')
 
-    # convert predicted price
     df['predicted_price'] = (
         df['predicted_price']
         .astype(str)
         .str.replace(',', '')
         .str.replace(' ', '')
-        .astype(float)
+        .astype('float64')  # <--- quan trọng nhất
     )
 
-    # convert time to datetime
     df['time'] = pd.to_datetime(df['time'])
 
-    fig = make_subplots(rows=1, cols=1, vertical_spacing=0.1,
-                        subplot_titles=("Giá cổ phiếu dự đoán",))
+    fig = make_subplots(rows=1, cols=1)
 
     fig.add_trace(
         go.Scatter(
-            x=df['time'], 
+            x=df['time'],
             y=df['predicted_price'],
-            mode='lines', 
+            mode='lines',
             name='Giá dự đoán'
-        ),
-        row=1, col=1
+        )
     )
 
-    fig.update_layout(
-        title_text=f"Biểu đồ giá dự đoán cổ phiếu {symbol}",
-        height=600
-    )
+    fig.update_layout(height=600)
 
     return fig
 
@@ -79,7 +71,6 @@ with tabs[0]:
         st.write(df.dtypes)
         st.write(df.shape)
         st.write(df.isna().sum())
-        df['predicted_price'] = df['predicted_price'].astype('float64')
         st.write(df.dtypes)
         st.dataframe(df)   
         st.write("### Biểu đồ dự đoán")
