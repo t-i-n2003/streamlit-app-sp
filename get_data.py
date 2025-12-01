@@ -1,15 +1,20 @@
-import os
-from pathlib import Path
-
-vn_dir = Path.home() / ".vnstock"
-os.makedirs(vn_dir, exist_ok=True)    
-from vnstock import Vnstock
 import pandas as pd
+from vnstock import stock_historical_data
 
-def get_data(ticker ,start_date_str, end_date_str):
-    stock_symbol = Vnstock().stock(symbol = ticker, source = 'VCI')
-    price_df = stock_symbol.quote.history(start = start_date_str,end = end_date_str)
-    price_df = price_df.rename(columns = {'close':'price'}, inplace = False)
-    price_df.reset_index(inplace = True)
-    price_df = price_df[['time', 'price']]
-    return price_df
+def get_data(ticker, start_date_str, end_date_str):
+    # Lấy dữ liệu giá từ API cũ của vnstock 0.2.3
+    df = stock_historical_data(
+        symbol=ticker,
+        start_date=start_date_str,
+        end_date=end_date_str,
+        resolution='1D'
+    )
+
+    # Chuẩn hóa cột cho giống code cũ
+    df = df.rename(columns={'close': 'price'})
+    df = df[['time', 'price']]
+
+    # Reset index nếu cần
+    df = df.reset_index(drop=True)
+
+    return df
