@@ -9,7 +9,7 @@ def predict(df, symbol, model_path, num_days):
     timestep = struc_df[struc_df['symbol'] == symbol]['best_time_steps'].values[0]
     input_data = df['price'].iloc[-timestep:].values.reshape(-1, 1)
     scaler = joblib.load(f'Scalers/{symbol}_scaler.pkl')
-    scaled_input = scaler.fit_transform(input_data)  # ✅ chỉ transform, KHÔNG fit_transform
+    scaled_input = scaler.transform(input_data)  # ✅ chỉ transform, KHÔNG fit_transform
     predictions = []
     for i in range(num_days):
         input_reshaped = scaled_input.reshape(1, timestep, 1)
