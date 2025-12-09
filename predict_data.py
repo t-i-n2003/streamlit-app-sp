@@ -16,8 +16,8 @@ def predict(df, symbol, model_path, num_days):
         prediction = model.predict(input_reshaped, verbose=0)
         predictions.append(prediction[0][0])
         
-        new_input = np.array([[prediction[0][0]]])
-        scaled_input = np.vstack([scaled_input[1:], new_input])  # giữ shape (timestep, 1)
+        new_scaled = np.array([[pred_scaled]])
+        scaled_input = np.vstack([scaled_input[1:], new_scaled])
     
     predictions = scaler.inverse_transform(np.array(predictions).reshape(-1, 1))
     predictions = pd.DataFrame(predictions, columns=['predictions'])
