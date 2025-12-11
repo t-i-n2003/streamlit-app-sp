@@ -12,11 +12,17 @@ def predict(df, symbol, model_path, num_days):
     scaled_input = scaler.transform(input_data)  # ✅ chỉ transform, KHÔNG fit_transform
     predictions = []
     for i in range(num_days):
-        input_reshaped = scaled_input.reshape(1, timestep, 1)
-        prediction = model.predict(input_reshaped, verbose=0)
-        predictions.append(prediction[0][0])
-        
+        X = scaled_input.reshape(1, timestep, 1)
+        pred_scaled = model.predict(X, verbose=0)
+    
+        # ✔️ lấy giá trị float
+        pred_scaled = float(pred_scaled[0][0])
+    
+        predictions.append(pred_scaled)
+    
+        # ✔️ dùng trực tiếp pred_scaled đã là giá scaled
         new_scaled = np.array([[pred_scaled]])
+    
         scaled_input = np.vstack([scaled_input[1:], new_scaled])
     
     predictions = scaler.inverse_transform(np.array(predictions).reshape(-1, 1))
