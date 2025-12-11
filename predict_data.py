@@ -14,34 +14,32 @@ def predict(df, symbol, model_path, num_days):
     scaler = joblib.load(f'Scalers/{symbol}_scaler.pkl')
     scaled_input = scaler.transform(input_data)
 
-    predictions = []
+    predictions_scaled = []   # ❗ lưu giá scaled, chưa inverse
 
     for i in range(num_days):
         X = scaled_input.reshape(1, timestep, 1)
 
-        # model → scaled value
+        # model xuất ra giá scaled
         pred_scaled = float(model.predict(X, verbose=0)[0][0])
 
-        # scaled → actual price
-        pred_real = scaler.inverse_transform([[pred_scaled]])[0][0]
+        # lưu giá scaled
+        predictions_scaled.append(pred_scaled)
 
-        predictions.append(pred_real)
+        # update input window (scaled → giữ nguyên)
+        scaled_input = np.vstack([scaled_input[1:], [[pred_scaled]]])
 
-        # convert actual price → scaled lại để đưa vào mô hình
-        new_scaled = scaler.transform([[pred_real]])
-
-        # update input window
-        scaled_input = np.vstack([scaled_input[1:], new_scaled])
-
-    # KHÔNG inverse_transform lần nữa!
-    predictions = pd.DataFrame(predictions, columns=['predicted_price'])
-
-    next_date = df['time'].iloc[-1] + pd.DateOffset(days=1)
-    future_dates = pd.bdate_range(start=next_date, periods=num_days, freq='B')
+    # ❗ Chỉ inverse_transform 1 lần, sau khi loop kết thúc
+    predictions_real = scaler.inverse_transform(
+        np.array(predictions_scaled).reshape(-1,1)
+    )
 
     df_predictions = pd.DataFrame({
-        'time': future_dates,
-        'predicted_price': predictions['predicted_price']
+        "time": pd.bdate_range(
+            start=df['time'].iloc[-1] + pd.DateOffset(days=1),
+            periods=num_days,
+            freq='B'
+        ),
+        "predicted_price": predictions_real.flatten()
     })
 
     return df_predictions
